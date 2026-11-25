@@ -10,8 +10,17 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.3"
-      - name: Run ISBN-13 Minitest suite
+      - name: Run Part 1 & Part 3 Minitest suites
         run: |
           ruby -v
           ruby test/isbn13_calculator_test.rb
-          ruby -Ilib -r isbn13_calculator -e 'puts "Example 978014300723 => #{Isbn13Calculator.complete("978014300723")}"'
+          ruby test/isbn13_endpoint_test.rb
+          ruby -r stringio -r ./app/api_app -e '
+            status, _headers, body = ApiApp.call(
+              "REQUEST_METHOD" => "POST",
+              "PATH_INFO" => "/api/v1/isbn13/complete",
+              "CONTENT_TYPE" => "application/json",
+              "rack.input" => StringIO.new(%({"isbn12":"978014300723"}))
+            )
+            puts "POST /api/v1/isbn13/complete => HTTP #{status}: #{body.join}"
+          '
