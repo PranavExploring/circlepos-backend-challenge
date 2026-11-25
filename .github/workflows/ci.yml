@@ -1,0 +1,17 @@
+name: Ruby CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - name: Run ISBN-13 Minitest suite
+        run: |
+          ruby -v
+          ruby test/isbn13_calculator_test.rb
+          ruby -Ilib -r isbn13_calculator -e 'puts "Example 978014300723 => #{Isbn13Calculator.complete("978014300723")}"'
